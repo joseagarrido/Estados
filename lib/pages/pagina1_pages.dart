@@ -1,4 +1,7 @@
+import 'package:estado/bloc/usuario/usuario_bloc.dart';
+import 'package:estado/models/usuario.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 
 class Pagina1Page extends StatelessWidget {
@@ -9,7 +12,14 @@ class Pagina1Page extends StatelessWidget {
       appBar: AppBar(
         title: Text('Pagina1'),
       ),
-      body: InformacionUsuario(),
+      body: BlocBuilder<UsuarioBloc, UsuarioState>(
+        builder: (_, state) {
+          if (state.existeUsuario) 
+          {return InformacionUsuario(state.usuario);}
+          else
+           {return Center(child:Text('No existe usuario'));} 
+        },
+      ),
      floatingActionButton: FloatingActionButton(
        child: Icon(Icons.accessibility),
        onPressed: ()=>Navigator.pushNamed(context, 'pagina2'),
@@ -19,6 +29,10 @@ class Pagina1Page extends StatelessWidget {
 }
 
 class InformacionUsuario extends StatelessWidget {
+
+  final Usuario user;
+
+  const InformacionUsuario( this.user) ;
 
 
   @override
@@ -32,14 +46,14 @@ class InformacionUsuario extends StatelessWidget {
         children: [
           Text('General', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
           Divider(),
-          ListTile(title: Text('Nombre: ')),
-          ListTile(title: Text('Edad: ')),
+          ListTile(title: Text('Nombre: ${user.nombre} ')),
+          ListTile(title: Text('Edad: ${user.edad} ')),
 
           Text('Profesiones', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
           Divider(),
 
-          ListTile(title: Text('Profesión 1: ')),
-          ListTile(title: Text('Profesión 2: ')),
+          ...user.profesiones.map((profesion) => 
+            ListTile(title: Text(profesion),))
         ],
       ),
     );
