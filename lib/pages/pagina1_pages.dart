@@ -1,4 +1,7 @@
+import 'package:estado/bloc/usuario/usuario_cubit.dart';
+import 'package:estado/models/usuario.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 
 class Pagina1Page extends StatelessWidget {
@@ -9,7 +12,7 @@ class Pagina1Page extends StatelessWidget {
       appBar: AppBar(
         title: Text('Pagina1'),
       ),
-      body: InformacionUsuario(),
+      body: BodyScaffold() ,
      floatingActionButton: FloatingActionButton(
        child: Icon(Icons.accessibility),
        onPressed: ()=>Navigator.pushNamed(context, 'pagina2'),
@@ -18,7 +21,30 @@ class Pagina1Page extends StatelessWidget {
   }
 }
 
+class BodyScaffold extends StatelessWidget {
+ 
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<UsuarioCubit,UsuarioState> (
+      builder: (_, state) {
+        if (state is UsuarioInicial) {
+          return Center(child: Text('No hay información del usuario'));
+        } else { if (state is UsuarioActivo) 
+
+           return InformacionUsuario(usuario: state.usuario);
+        }
+       
+
+      },);
+  }
+}
+
 class InformacionUsuario extends StatelessWidget {
+
+  final Usuario usuario;
+
+  const InformacionUsuario({ this.usuario}) ;
 
 
   @override
@@ -32,14 +58,16 @@ class InformacionUsuario extends StatelessWidget {
         children: [
           Text('General', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
           Divider(),
-          ListTile(title: Text('Nombre: ')),
-          ListTile(title: Text('Edad: ')),
+          ListTile(title: Text('Nombre: ${usuario.nombre}')),
+          ListTile(title: Text('Edad: ${usuario.edad}')),
 
           Text('Profesiones', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
           Divider(),
 
-          ListTile(title: Text('Profesión 1: ')),
-          ListTile(title: Text('Profesión 2: ')),
+          ...usuario.profesiones.map(
+            (profesion) => ListTile(title:Text(profesion))
+            ).toList()
+
         ],
       ),
     );
